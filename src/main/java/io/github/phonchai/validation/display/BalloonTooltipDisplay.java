@@ -423,7 +423,10 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
         // Check if inside viewport and completely scrolled out
         JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, target);
         if (viewport != null) {
-            Rectangle viewRect = viewport.getViewRect();
+            // Use viewport's own bounds (component coordinates) — NOT getViewRect()
+            // which returns view-content coordinates that don't match convertRectangle
+            // output
+            Rectangle viewRect = new Rectangle(0, 0, viewport.getWidth(), viewport.getHeight());
             Rectangle targetRect = SwingUtilities.convertRectangle(target,
                     new Rectangle(0, 0, target.getWidth(), target.getHeight()), viewport);
             if (!viewRect.intersects(targetRect)) {
