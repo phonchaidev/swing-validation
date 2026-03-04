@@ -4,13 +4,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.phonchai</groupId>
+    <groupId>io.github.phonchaidev</groupId>
     <artifactId>swing-validation</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <packaging>jar</packaging>
 
-    <name>Swing Validation</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>Production-grade form validation library for Java Swing with web-style error displays</description>
+    <url>https://github.com/phonchaidev/swing-validation</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Phonchai Son-Sam-Rong (First)</name>
+            <organization>SF Integrated Solution Co., Ltd.</organization>
+            <organizationUrl>https://sfis.co.th/</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/phonchaidev/swing-validation.git</connection>
+        <developerConnection>scm:git:ssh://github.com:phonchaidev/swing-validation.git</developerConnection>
+        <url>http://github.com/phonchaidev/swing-validation/tree/main</url>
+    </scm>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -45,6 +67,34 @@
                 <configuration>
                     <release>21</release>
                 </configuration>
+            </plugin>
+            <!-- Source Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Javadoc Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
