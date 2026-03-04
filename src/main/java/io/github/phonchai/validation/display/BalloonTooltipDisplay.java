@@ -170,7 +170,7 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
         TooltipState existing = activeTooltips.get(component);
         if (existing != null) {
             existing.tooltip.setMessage(message);
-            updateTooltipPosition(existing.tooltip, component);
+            updateTooltipPosition(existing.tooltip, existing.target);
             return;
         }
 
@@ -284,9 +284,11 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
             }
         });
 
-        // Setup viewport listener — listen to the ACTUAL viewport of the internal
-        // component
-        JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, component);
+        // Setup viewport listener — listen to the OUTER viewport (form scroll pane),
+        // not the inner viewport of a JScrollPane-wrapped component like JTextArea.
+        // Using 'target' (which resolves JTextArea → its JScrollPane) ensures we find
+        // the form's viewport, not the inner text area viewport.
+        JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, target);
         javax.swing.event.ChangeListener viewportListener = null;
         if (viewport != null) {
             viewportListener = e -> updateTooltipPosition(tooltip, target);
