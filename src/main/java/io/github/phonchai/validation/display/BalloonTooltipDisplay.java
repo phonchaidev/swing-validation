@@ -163,7 +163,7 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
     public void showError(JComponent component, String message) {
         // Set FlatLaf outline
         if (outlineEnabled) {
-            component.putClientProperty(FlatClientProperties.OUTLINE, "error");
+            getTargetComponent(component).putClientProperty(FlatClientProperties.OUTLINE, "error");
         }
 
         // Check if tooltip already exists — update message
@@ -196,7 +196,7 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
     public void hideError(JComponent component) {
         // Clear FlatLaf outline
         if (outlineEnabled) {
-            component.putClientProperty(FlatClientProperties.OUTLINE, null);
+            getTargetComponent(component).putClientProperty(FlatClientProperties.OUTLINE, null);
         }
 
         TooltipState state = activeTooltips.remove(component);
@@ -211,7 +211,7 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
             JComponent comp = entry.getKey();
             TooltipState state = entry.getValue();
             if (outlineEnabled) {
-                comp.putClientProperty(FlatClientProperties.OUTLINE, null);
+                getTargetComponent(comp).putClientProperty(FlatClientProperties.OUTLINE, null);
             }
             removeTooltipFromOverlay(state);
         }
@@ -220,7 +220,9 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
 
     // ── Internal methods ────────────────────────────────────────
 
-    private void createAndShowTooltip(JComponent target, String message) {
+    private void createAndShowTooltip(JComponent component, String message) {
+        JComponent target = getTargetComponent(component);
+
         // Determine arrow position (auto-flip if needed)
         BalloonTooltip.ArrowPosition actualPosition = calculatePosition(target);
 
@@ -270,7 +272,7 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
         };
         target.addComponentListener(listener);
 
-        // Also listen for hierarchy changes (e.g., tab switches, scroll)
+        // Also listen for target hierarchy changes (e.g., tab switches, scroll)
         target.addHierarchyListener(e -> {
             if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
                 if (target.isShowing()) {
@@ -282,16 +284,17 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
             }
         });
 
-        // Setup viewport listener
-        JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, target);
+        // Setup viewport listener — listen to the ACTUAL viewport of the internal
+        // component
+        JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, component);
         javax.swing.event.ChangeListener viewportListener = null;
         if (viewport != null) {
             viewportListener = e -> updateTooltipPosition(tooltip, target);
             viewport.addChangeListener(viewportListener);
         }
 
-        // Store state
-        activeTooltips.put(target, new TooltipState(tooltip, target, listener, viewport, viewportListener, null));
+        // Store state using the ORIGINAL component as key
+        activeTooltips.put(component, new TooltipState(tooltip, target, listener, viewport, viewportListener, null));
 
         // Fade in
         if (fadeEnabled) {
@@ -492,6 +495,14 @@ public class BalloonTooltipDisplay implements ErrorDisplay {
                     state.tooltip.getX(), state.tooltip.getY(),
                     state.tooltip.getWidth(), state.tooltip.getHeight());
         }
+    }
+
+    private JComponent getTargetComponent(JComponent c) {
+        if (c instanceof javax.swing.text.JTextComponent && c.getParent() instanceof JViewport
+                && c.getParent().getParent() instanceof JScrollPane scrollPane) {
+            return scrollPane;
+        }
+        return c;
     }
 
     /**

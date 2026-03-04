@@ -70,7 +70,7 @@ public class InlineLabelDisplay implements ErrorDisplay {
     @Override
     public void showError(JComponent component, String message) {
         if (outlineEnabled) {
-            component.putClientProperty(FlatClientProperties.OUTLINE, "error");
+            getTargetComponent(component).putClientProperty(FlatClientProperties.OUTLINE, "error");
         }
 
         // Check if label already exists — update text
@@ -98,7 +98,7 @@ public class InlineLabelDisplay implements ErrorDisplay {
     @Override
     public void hideError(JComponent component) {
         if (outlineEnabled) {
-            component.putClientProperty(FlatClientProperties.OUTLINE, null);
+            getTargetComponent(component).putClientProperty(FlatClientProperties.OUTLINE, null);
         }
 
         JLabel label = activeLabels.remove(component);
@@ -116,7 +116,7 @@ public class InlineLabelDisplay implements ErrorDisplay {
     public void dispose() {
         for (var entry : activeLabels.entrySet()) {
             if (outlineEnabled) {
-                entry.getKey().putClientProperty(FlatClientProperties.OUTLINE, null);
+                getTargetComponent(entry.getKey()).putClientProperty(FlatClientProperties.OUTLINE, null);
             }
             JLabel label = entry.getValue();
             Container parent = label.getParent();
@@ -133,6 +133,7 @@ public class InlineLabelDisplay implements ErrorDisplay {
      * Creates and adds an error label below the target component.
      */
     private void createLabel(JComponent component, String message) {
+        JComponent target = getTargetComponent(component);
         JLabel errorLabel = new JLabel(message);
         errorLabel.setForeground(textColor);
 
@@ -151,12 +152,12 @@ public class InlineLabelDisplay implements ErrorDisplay {
 
         // Try to add the label as an overlay on JLayeredPane
         // This avoids disturbing the parent's layout
-        JLayeredPane layeredPane = findLayeredPane(component);
+        JLayeredPane layeredPane = findLayeredPane(target);
         if (layeredPane != null) {
-            addAsOverlay(component, errorLabel, layeredPane);
+            addAsOverlay(target, errorLabel, layeredPane);
         } else {
             // Fallback: add to parent container
-            addToParent(component, errorLabel);
+            addToParent(target, errorLabel);
         }
 
         activeLabels.put(component, errorLabel);
@@ -225,6 +226,14 @@ public class InlineLabelDisplay implements ErrorDisplay {
         }
         parent.revalidate();
         parent.repaint();
+    }
+
+    private JComponent getTargetComponent(JComponent c) {
+        if (c instanceof javax.swing.text.JTextComponent && c.getParent() instanceof JViewport
+                && c.getParent().getParent() instanceof JScrollPane scrollPane) {
+            return scrollPane;
+        }
+        return c;
     }
 
     private JLayeredPane findLayeredPane(JComponent component) {

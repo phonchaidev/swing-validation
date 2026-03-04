@@ -41,6 +41,9 @@ A modern, fluent, and comprehensive validation library for Java Swing, designed 
   - **Locale Support:** Built-in English and Thai (`new Locale("th", "TH")`).
   - **Dynamic Messages:** `validator.field(comp).required()` auto-fetches message based on current Locale.
   - **Global Theming:** Customize fonts and colors project-wide via `UIManager`.
+- **FlatLaf Native Support 🎨:**
+  - **JScrollPane Validation**: Automatic detection and handling of `JTextArea` wrapped in `JScrollPane`.
+  - **Outline Border**: Correctly applies red outline to the `JScrollPane` instead of the inner component.
 
 ### Installation 📦
 
@@ -61,7 +64,7 @@ A modern, fluent, and comprehensive validation library for Java Swing, designed 
 <dependency>
     <groupId>com.github.phonchaidev</groupId>
     <artifactId>swing-validation</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.4</version>
 </dependency>
 ```
 
@@ -181,6 +184,9 @@ UIManager.put("Validation.errorColor", Color.MAGENTA);
   - **Locale Support:** รองรับภาษาไทยและอังกฤษในตัว (`new Locale("th", "TH")`)
   - **Dynamic Messages:** ดึงข้อความแจ้งเตือนตามภาษาปัจจุบันให้อัตโนมัติ
   - **Global Theming:** ปรับแก้ Font และสีได้ทั้งโปรเจกต์ผ่าน `UIManager`
+- **รองรับ FlatLaf อย่างเต็มรูปแบบ 🎨:**
+  - **JScrollPane Support**: ตรวจจับและจัดการ `JTextArea` ที่อยู่ใน `JScrollPane` ให้อัตโนมัติ
+  - **ขอบแดงที่ถูกต้อง**: แสดงเส้นขอบ Error ที่ตัว `JScrollPane` (ไม่ใช่ตัวไส้ข้างใน) เพื่อความสวยงาม
 
 ### การติดตั้ง 📦
 
@@ -201,7 +207,7 @@ UIManager.put("Validation.errorColor", Color.MAGENTA);
 <dependency>
     <groupId>com.github.phonchaidev</groupId>
     <artifactId>swing-validation</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.4</version>
 </dependency>
 ```
 

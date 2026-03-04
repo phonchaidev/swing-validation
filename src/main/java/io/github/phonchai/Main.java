@@ -122,6 +122,7 @@ public class Main {
         String lblConfirm = isThai ? "ยืนยันรหัสผ่าน *" : "Confirm Password *";
         String lblAge = isThai ? "อายุ" : "Age";
         String lblCountry = isThai ? "ประเทศ *" : "Country *";
+        String lblAddress = isThai ? "ที่อยู่" : "Address";
         String lblEmployed = isThai ? "มีงานทำอยู่" : "Currently Employed";
         String lblCompanyStub = isThai ? "ชื่อบริษัท (ระบุถ้ามีงานทำ)" : "Company name (required if employed)";
         String lblRemove = isThai ? "ลบช่องนี้" : "Remove";
@@ -190,10 +191,36 @@ public class Main {
         cbCountry.setPreferredSize(new Dimension(300, 32));
         fieldsPanel.add(cbCountry, gbc);
 
-        // Row 7: Agree checkbox + conditional field
+        // Row 7: Address (JTextArea + JScrollPane)
         gbc.gridy = 7;
         gbc.gridx = 0;
         gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.insets = new Insets(12, 8, 8, 8);
+        fieldsPanel.add(new JLabel(lblAddress), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 0.3;
+        JTextArea txtAddress = new JTextArea(3, 20);
+        txtAddress.setLineWrap(true);
+        txtAddress.setWrapStyleWord(true);
+        txtAddress.setMargin(new Insets(8, 8, 8, 8));
+        txtAddress.setBorder(null); // Use ScrollPane border
+
+        JScrollPane scrollAddress = new JScrollPane(txtAddress);
+        scrollAddress.setPreferredSize(new Dimension(300, 80));
+        fieldsPanel.add(scrollAddress, gbc);
+
+        // Row 8: Agree checkbox + conditional field
+        gbc.gridy = 8;
+        gbc.gridx = 0;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(8, 8, 8, 8);
         JCheckBox chkEmployed = new JCheckBox(lblEmployed);
         fieldsPanel.add(chkEmployed, gbc);
         gbc.gridx = 1;
@@ -265,6 +292,11 @@ public class Main {
 
         // Country: required
         validator.field(cbCountry).required();
+
+        // Address: required + min length 10
+        validator.field(txtAddress).required(isThai ? "กรุณากรอกที่อยู่" : "Address is required")
+                .minLength(10, isThai ? "ที่อยู่ต้องมีความยาวอย่างน้อย 10 ตัวอักษร"
+                        : "Address must be at least 10 characters");
 
         // Company: required only when employed
         validator.field(txtCompany).requiredWhen(chkEmployed::isSelected);

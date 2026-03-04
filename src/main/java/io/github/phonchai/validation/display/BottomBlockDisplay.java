@@ -45,7 +45,7 @@ public class BottomBlockDisplay implements ErrorDisplay {
     @Override
     public void showError(JComponent component, String message) {
         // Outline
-        component.putClientProperty(FlatClientProperties.OUTLINE, "error");
+        getTargetComponent(component).putClientProperty(FlatClientProperties.OUTLINE, "error");
 
         LabelState state = activeLabels.get(component);
         if (state != null) {
@@ -76,7 +76,7 @@ public class BottomBlockDisplay implements ErrorDisplay {
 
     @Override
     public void hideError(JComponent component) {
-        component.putClientProperty(FlatClientProperties.OUTLINE, null);
+        getTargetComponent(component).putClientProperty(FlatClientProperties.OUTLINE, null);
         LabelState state = activeLabels.remove(component);
         if (state != null) {
             removeLabel(state);
@@ -90,7 +90,8 @@ public class BottomBlockDisplay implements ErrorDisplay {
         }
     }
 
-    private void createAndShowLabel(JComponent target, String message) {
+    private void createAndShowLabel(JComponent component, String message) {
+        JComponent target = getTargetComponent(component);
         JLabel label = new JLabel(message);
         label.setOpaque(true);
         label.setBackground(bgColor);
@@ -141,7 +142,7 @@ public class BottomBlockDisplay implements ErrorDisplay {
             }
         });
 
-        activeLabels.put(target, new LabelState(label, target, listener));
+        activeLabels.put(component, new LabelState(label, target, listener));
 
         layeredPane.add(label, JLayeredPane.POPUP_LAYER);
         updatePosition(label, target);
@@ -179,6 +180,14 @@ public class BottomBlockDisplay implements ErrorDisplay {
             parent.repaint(state.label.getX(), state.label.getY(),
                     state.label.getWidth(), state.label.getHeight());
         }
+    }
+
+    private JComponent getTargetComponent(JComponent c) {
+        if (c instanceof javax.swing.text.JTextComponent && c.getParent() instanceof JViewport
+                && c.getParent().getParent() instanceof JScrollPane scrollPane) {
+            return scrollPane;
+        }
+        return c;
     }
 
     private JLayeredPane findLayeredPane(JComponent component) {

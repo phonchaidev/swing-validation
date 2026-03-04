@@ -49,12 +49,12 @@ public class TrailingIconDisplay implements ErrorDisplay {
         label.setToolTipText(message);
 
         // Also set outline for visibility
-        component.putClientProperty(FlatClientProperties.OUTLINE, "error");
+        getTargetComponent(component).putClientProperty(FlatClientProperties.OUTLINE, "error");
     }
 
     @Override
     public void hideError(JComponent component) {
-        component.putClientProperty(FlatClientProperties.OUTLINE, null);
+        getTargetComponent(component).putClientProperty(FlatClientProperties.OUTLINE, null);
 
         if (activeIcons.containsKey(component)) {
             component.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, null);
@@ -67,6 +67,14 @@ public class TrailingIconDisplay implements ErrorDisplay {
         for (JComponent comp : activeIcons.keySet()) {
             hideError(comp);
         }
+    }
+
+    private JComponent getTargetComponent(JComponent c) {
+        if (c instanceof javax.swing.text.JTextComponent && c.getParent() instanceof JViewport
+                && c.getParent().getParent() instanceof JScrollPane scrollPane) {
+            return scrollPane;
+        }
+        return c;
     }
 
     /**

@@ -26,13 +26,23 @@ public class OutlineErrorDisplay implements ErrorDisplay {
 
     @Override
     public void showError(JComponent component, String message) {
-        component.putClientProperty(FlatClientProperties.OUTLINE, "error");
+        JComponent target = getTargetComponent(component);
+        target.putClientProperty(FlatClientProperties.OUTLINE, "error");
         component.setToolTipText(message);
     }
 
     @Override
     public void hideError(JComponent component) {
-        component.putClientProperty(FlatClientProperties.OUTLINE, null);
+        JComponent target = getTargetComponent(component);
+        target.putClientProperty(FlatClientProperties.OUTLINE, null);
         component.setToolTipText(null);
+    }
+
+    private JComponent getTargetComponent(JComponent c) {
+        if (c instanceof javax.swing.text.JTextComponent && c.getParent() instanceof JViewport
+                && c.getParent().getParent() instanceof JScrollPane scrollPane) {
+            return scrollPane;
+        }
+        return c;
     }
 }
